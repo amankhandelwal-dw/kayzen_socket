@@ -9,8 +9,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new SocketIO(server, {
     cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
+        origin: "*"
     }
 });
 
@@ -31,7 +30,7 @@ io.on("connection", (socket) => {
     const userId = socket.handshake.query.userId;
     if (userId) {
         global.onlineUsers.set(userId, socket.id);
-        console.log(global.onlineUsers, 'onlineUsers');
+        // console.log(global.onlineUsers, 'onlineUsers');
     }
 
     socket.on('send_notification', async (recipient_id) => {
