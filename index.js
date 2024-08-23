@@ -9,7 +9,8 @@ const app = express();
 const server = http.createServer(app);
 const io = new SocketIO(server, {
     cors: {
-        origin: "*"
+        origin: "*",
+    
     }
 });
 
@@ -33,22 +34,23 @@ io.on("connection", (socket) => {
         // console.log(global.onlineUsers, 'onlineUsers');
     }
 
-    socket.on('send_notification', async (recipient_id) => {
+    socket.on('send_notification', async (data) => {
+        const { recipient_id, recipient_type } = data;
         const userSocketId = global.onlineUsers.get(recipient_id);
         if (!userSocketId) {
             console.log(`No socket found for recipient_id ${recipient_id}`);
             return;
         }
         try {
-            const notifications = await getNotifications(recipient_id);
+            const notifications = await getNotifications(recipient_id, recipient_type);
             io.to(userSocketId).emit('get_notification', { data: notifications });
         } catch (error) {
             console.error('Error sending notifications:', error);
         }
     });
 
-    async function getNotifications(recipient_id) {
-        const apiUrl = `https://kayzen.es/backend/api/notification/getNotifications/${recipient_id}`;
+    async function getNotifications(recipient_id, recipient_type) {
+        const apiUrl = `https://kayzen.es/backend/api/notification/getNotifications?recipient_id=${recipient_id}&recipient_type=${recipient_type}`;
         try {
             const response = await axios.get(apiUrl);
             return response.data;
