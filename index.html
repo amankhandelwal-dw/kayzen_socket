@@ -26,7 +26,10 @@
         const userId = '3'; // Replace with actual user ID
 
         // Connect to the WebSocket server with the user ID as a query parameter
-        const socket = io(`https://kayzen.es/socket`);
+        const socket = io(`https://kayzen.es/socket`, {
+    query: { userId }  // Pass the userId as a query parameter
+});
+
 
         // Emit an event to request notifications
         document.getElementById('requestNotification').addEventListener('click', () => {

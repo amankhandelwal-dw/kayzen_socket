@@ -25,7 +25,8 @@ app.get('/', (req, res) => {
 global.onlineUsers = new Map();
 
 io.on("connection", (socket) => {
-    console.log('A user connected');
+    console.log('A user connected with socket ID:', socket.id);
+    console.log('User ID from query:', socket.handshake.query.userId);
 
     const userId = socket.handshake.query.userId;
     if (userId) {
