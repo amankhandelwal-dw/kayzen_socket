@@ -5,6 +5,7 @@ const axios = require('axios');
 
 const app = express();
 const server = http.createServer(app);
+console.log(server, 'server')
 
 const io = new SocketIO(server, {
     cors: {
