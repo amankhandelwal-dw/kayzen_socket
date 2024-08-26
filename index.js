@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new SocketIO(server, {
     cors: {
-        origin: "*",
+        origin: "http://127.0.0.1:5500",
         methods: ["GET", "POST"],
         allowedHeaders: ["Content-Type"],
         credentials: true
