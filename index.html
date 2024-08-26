@@ -23,46 +23,25 @@
 
     <script>
         // User ID to be sent to the server
-        const socket = io('https://kayzen.es/socket', {
+        const socket = io('https://kayzen.es:8000', {
     query: { userId: '3' },
-    // transports: ['websocket'],  // Use WebSocket transport
-    // upgrade: false  // Disable upgrade to other transports
+    transports: ['websocket'],
+    upgrade: false
 });
 
+socket.on('connect', () => {
+    console.log('Connected to WebSocket server');
+});
 
-        // Emit an event to request notifications
-        document.getElementById('requestNotification').addEventListener('click', () => {
-            console.log(`Requesting notifications for recipient_id ${userId}`);
-            console.log(userId, 'userId')
-            socket.emit('send_notification', userId);
-        });
+socket.on('connect_error', (err) => {
+    console.error('Connection error:', err.message);
+    console.error('Error details:', err);
+});
 
-        // Listen for incoming notifications
-        socket.on('get_notification', (data) => {
-            console.log('Received notification:', data);
-            const notificationsDiv = document.getElementById('notifications');
-            notificationsDiv.innerHTML = ''; // Clear previous notifications
-            if (data.message && Array.isArray(data.message)) {
-                data.message.forEach(notification => {
-                    const p = document.createElement('p');
-                    p.textContent = notification.message;
-                    notificationsDiv.appendChild(p);
-            });
-            } else {
-                const p = document.createElement('p');
-                p.textContent = 'No new notifications.';
-                notificationsDiv.appendChild(p);
-            }
-        });
+socket.on('disconnect', (reason) => {
+    console.log('Disconnected from WebSocket server:', reason);
+});
 
-        // Log connection status
-        socket.on('connect', () => {
-            console.log('Connected to WebSocket server');
-        });
-
-        socket.on('disconnect', () => {
-            console.log('Disconnected from WebSocket server');
-        });
     </script>
 </body>
 </html>

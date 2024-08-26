@@ -4,14 +4,15 @@ const { Server: SocketIO } = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-const io = new SocketIO(server, {
+const io = require('socket.io')(server, {
     cors: {
-        origin: "*",  // Allow all origins (change this for production)
-        methods: ["GET", "POST"],
-        allowedHeaders: ["Content-Type"],
+        origin: '*',
+        methods: ['GET', 'POST'],
+        allowedHeaders: ['my-custom-header'],
         credentials: true
     }
 });
+
 
 app.get('/', (req, res) => {
     console.log(io, 'ioioioo')
