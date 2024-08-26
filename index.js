@@ -32,14 +32,14 @@ io.on("connection", (socket) => {
     }
 
     socket.on('send_notification', async (data) => {
-        const { recipient_id, recipient_type } = data;
+        const { recipient_id, recipient_type, notificationId } = data;
         const userSocketId = global.onlineUsers.get(recipient_id);
         if (!userSocketId) {
             console.log(`No socket found for recipient_id ${recipient_id}`);
             return;
         }
         try {
-            const notifications = await getNotifications(recipient_id, recipient_type);
+            const notifications = await getNotifications(notificationId);
             io.to(userSocketId).emit('get_notification', { data: notifications });
         } catch (error) {
             console.error('Error sending notifications:', error);
@@ -62,16 +62,17 @@ io.on("connection", (socket) => {
         }
     });
 
-    async function getNotifications(recipient_id, recipient_type) {
-        const apiUrl = `https://kayzen.es/backend/api/notification/getNotifications?recipient_id=${recipient_id}&recipient_type=${recipient_type}`;
+    async function getNotifications(notificationId) {
+        const apiUrl = `https://kayzen.es/backend/api/notification/getNotificationDetails`;
         try {
-            const response = await axios.get(apiUrl);
+            const response = await axios.post(apiUrl, { notificationId: notificationId });
             return response.data;
         } catch (error) {
             console.error('Error fetching notifications:', error);
             throw error;
         }
     }
+    
 
     async function markNotificationsAsSeen(notificationIds) {
         const apiUrl = `https://kayzen.es/backend/api/notification/updateNotification`;

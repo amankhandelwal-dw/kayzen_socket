@@ -26,7 +26,7 @@
         const userId = '3'; // Replace with actual user ID
 
         // Connect to the WebSocket server with the user ID as a query parameter
-        const socket = io(`http://192.168.29.107:8000?userId=${userId}`);
+        const socket = io(`https://kayzen.es/socket?userId=${userId}`);
 
         // Emit an event to request notifications
         document.getElementById('requestNotification').addEventListener('click', () => {
@@ -45,7 +45,7 @@
                     const p = document.createElement('p');
                     p.textContent = notification.message;
                     notificationsDiv.appendChild(p);
-                });
+            });
             } else {
                 const p = document.createElement('p');
                 p.textContent = 'No new notifications.';
