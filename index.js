@@ -16,7 +16,7 @@ const io = new SocketIO(server, {
 
 app.use(express.json());
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 5001;
 
 app.get('/', (req, res) => {
     return res.send("WebSocket Server is running");
