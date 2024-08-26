@@ -14,6 +14,7 @@ const io = new SocketIO(server, {
 });
 
 app.get('/', (req, res) => {
+    console.log(io, 'ioioioo')
     return res.send("WebSocket Server is running");
 });
 
