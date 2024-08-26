@@ -2,12 +2,22 @@ const http = require('http');
 const express = require('express');
 const { Server: SocketIO } = require('socket.io');
 const axios = require('axios');
+const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
+
+// Use cors middleware
+app.use(cors({
+    origin: "http://127.0.0.1:5500", // Replace with your client's URL
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+    credentials: true
+}));
+
 const io = new SocketIO(server, {
     cors: {
-        origin: "http://127.0.0.1:5500",
+        origin: "http://127.0.0.1:5500", // Replace with your client's URL
         methods: ["GET", "POST"],
         allowedHeaders: ["Content-Type"],
         credentials: true
@@ -16,7 +26,7 @@ const io = new SocketIO(server, {
 
 app.use(express.json());
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 8000;
 
 app.get('/', (req, res) => {
     return res.send("WebSocket Server is running");
@@ -25,8 +35,7 @@ app.get('/', (req, res) => {
 global.onlineUsers = new Map();
 
 io.on("connection", (socket) => {
-    console.log('A user connected with socket ID:', socket.id);
-    console.log('User ID from query:', socket.handshake.query.userId);
+    console.log('A user connected');
 
     const userId = socket.handshake.query.userId;
     if (userId) {
@@ -74,7 +83,7 @@ io.on("connection", (socket) => {
             throw error;
         }
     }
-    
+
     async function markNotificationsAsSeen(notificationIds) {
         const apiUrl = `https://kayzen.es/backend/api/notification/updateNotification`;
         try {
