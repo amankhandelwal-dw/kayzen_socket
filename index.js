@@ -113,6 +113,7 @@
 
 
 // server.js
+// server.js
 const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
@@ -125,7 +126,12 @@ const server = http.createServer(app);
 
 // Set up Socket.IO with the HTTP server
 const io = socketIO(server, {
-  cors: { origin: '*' }, // Allow all origins for CORS (adjust for production)
+  cors: {
+    origin: '*',  // Allow all origins for CORS (adjust for production)
+    methods: ['GET', 'POST'], // Allow GET and POST requests
+    allowedHeaders: ['Content-Type'], // Allow specific headers
+    credentials: true, // Allow credentials (cookies, headers, etc.)
+  },
 });
 
 // Create a namespace for user chat
