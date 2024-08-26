@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Socket.IO Notification Example</title>
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script src="http://localhost:8000/socket.io/socket.io.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -23,7 +23,7 @@
 
     <script>
         // User ID to be sent to the server
-        const socket = io('https://kayzen.es/socket', {
+        const socket = io('http://localhost:8000/userchatnamespace', {
     query: { userId: '3' },
     // transports: ['websocket'],  // Use WebSocket transport
     // upgrade: false  // Disable upgrade to other transports
