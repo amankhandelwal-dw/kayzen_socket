@@ -1,5 +1,3 @@
-// /websocket/index.js
-
 const http = require('http');
 const express = require('express');
 const { Server: SocketIO } = require('socket.io');
@@ -10,6 +8,9 @@ const server = http.createServer(app);
 const io = new SocketIO(server, {
     cors: {
         origin: "*",
+        methods: ["GET", "POST"],
+        allowedHeaders: ["Content-Type"],
+        credentials: true
     }
 });
 
@@ -55,7 +56,7 @@ io.on("connection", (socket) => {
         }
         try {
             await markNotificationsAsSeen(notificationIds);
-            const notifications = await getNotifications(recipient_id);
+            const notifications = await getNotifications(notificationIds[0]); // assuming notificationId can be used to fetch the updated list
             io.to(userSocketId).emit('get_notification', { data: notifications });
         } catch (error) {
             console.error('Error updating and sending notifications:', error);
@@ -65,7 +66,7 @@ io.on("connection", (socket) => {
     async function getNotifications(notificationId) {
         const apiUrl = `https://kayzen.es/backend/api/notification/getNotificationDetails`;
         try {
-            const response = await axios.post(apiUrl, { notificationId: notificationId });
+            const response = await axios.post(apiUrl, { notification_id: notificationId });
             return response.data;
         } catch (error) {
             console.error('Error fetching notifications:', error);
@@ -73,12 +74,11 @@ io.on("connection", (socket) => {
         }
     }
     
-
     async function markNotificationsAsSeen(notificationIds) {
         const apiUrl = `https://kayzen.es/backend/api/notification/updateNotification`;
         try {
             const formData = new URLSearchParams();
-            formData.append('notification_id', notificationIds.join(',')); 
+            formData.append('notification_id', notificationIds.join(','));
             const response = await axios.post(apiUrl, formData, {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
