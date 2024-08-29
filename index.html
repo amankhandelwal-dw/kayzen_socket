@@ -24,14 +24,13 @@
     <script>
         // User ID to be sent to the server
         const socket = io('13.51.82.85', {
-            query: { userId: '3', userType: 'admin' }
+            auth: { userId: '1', userType: 'admin' }
         });
 
         // Emit an event to request notifications
         document.getElementById('requestNotification').addEventListener('click', () => {
             const userId = '3'; // Define userId
             console.log(`Requesting notifications for recipient_id ${userId}`);
-            socket.emit('send_notification', { recipient_id: userId });
         });
 
         // Listen for incoming notifications
@@ -55,6 +54,7 @@
         // Log connection status
         socket.on('connect', () => {
             console.log('Connected to WebSocket server');
+            socket.emit('send_notification', {  recipient_id: '1', recipient_type: 'admin', notificationId: 1 });
         });
 
         socket.on('disconnect', () => {
