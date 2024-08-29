@@ -41,6 +41,7 @@ io.on("connection", (socket) => {
 
 
     socket.on('send_notification', async (data) => {
+        console.log(data, 'data');
         const { recipient_id, recipient_type, notificationId } = data;
         const userSocketId = global.onlineUsers.get(`${recipient_id}-${recipient_type}`);
         console.log(userSocketId, 'userSocketId')
