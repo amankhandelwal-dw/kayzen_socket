@@ -78,6 +78,7 @@ io.on("connection", (socket) => {
 
 async function getNotifications(notificationId) {
     const apiUrl = `https://kayzen.es/backend/api/notification/getNotificationDetails?notification_id=${notificationId}`;
+    console.log(apiUrl, 'apiUrl')
     try {
         const response = await axios.get(apiUrl);
         console.log(response.data.data, 'response');
