@@ -80,7 +80,7 @@ io.on("connection", (socket) => {
 async function getNotifications(notificationId) {
     const apiUrl = `https://kayzen.es/backend/api/notification/getNotificationDetails`;
     try {
-        const response = await axios.post(apiUrl, { notificationId: notificationId });
+        const response = await axios.post(apiUrl, { notification_id: notificationId });
          console.log(response, 'response')
         return response.data;
     } catch (error){
