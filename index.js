@@ -29,11 +29,11 @@ global.onlineUsers = new Map();
 
 io.on("connection", (socket) => {
     console.log('A user connected with socket ID:', socket.id);
-    console.log('User ID from query:', socket.handshake.query.userId);
-    console.log('User Type from query:', socket.handshake.query.userType);
+    console.log('User ID from auth:', socket.handshake.auth.userId);
+    console.log('User Type from auth:', socket.handshake.auth.userType);
 
-    const userId = socket.handshake.query.userId;
-    const userType = socket.handshake.query.userType;
+    const userId = socket.handshake.auth.userId;
+    const userType = socket.handshake.auth.userType;
 
     if (userId && userType) {
         global.onlineUsers.set(`${userId}-${userType}`, socket.id);
