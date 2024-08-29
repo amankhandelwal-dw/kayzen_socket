@@ -6,7 +6,6 @@ const axios = require('axios');
 const app = express();
 
 const server = http.createServer(app);
-console.log(server, 'server')
 
 const io = new SocketIO(server, {
     cors: {
@@ -17,8 +16,6 @@ const io = new SocketIO(server, {
     }
 });
 
-console.log(io, 'ioooooo')
-
 app.use(express.json());
 
 const PORT = process.env.PORT || 8000;
@@ -27,22 +24,26 @@ app.get('/', (req, res) => {
     return res.send("WebSocket Server is running");
 });
 
+
 global.onlineUsers = new Map();
 
 io.on("connection", (socket) => {
     console.log('A user connected with socket ID:', socket.id);
     console.log('User ID from query:', socket.handshake.query.userId);
+    console.log('User Type from query:', socket.handshake.query.userType);
 
     const userId = socket.handshake.query.userId;
-    if (userId) {
-        global.onlineUsers.set(userId, socket.id);
+    const userType = socket.handshake.query.userType;
+
+    if (userId && userType) {
+        global.onlineUsers.set(`${userId}-${userType}`, socket.id);
     }
 
     socket.on('send_notification', async (data) => {
         const { recipient_id, recipient_type, notificationId } = data;
-        const userSocketId = global.onlineUsers.get(recipient_id);
+        const userSocketId = global.onlineUsers.get(`${recipient_id}-${recipient_type}`);
         if (!userSocketId) {
-            console.log(`No socket found for recipient_id ${recipient_id}`);
+            console.log(`No socket found for recipient_id ${recipient_id} and recipient_type ${recipient_type}`);
             return;
         }
         try {
@@ -54,10 +55,10 @@ io.on("connection", (socket) => {
     });
 
     socket.on('markSeen', async (data) => {
-        const { notificationIds, recipient_id } = data;
-        const userSocketId = global.onlineUsers.get(recipient_id);
+        const { notificationIds, recipient_id, recipient_type } = data;
+        const userSocketId = global.onlineUsers.get(`${recipient_id}-${recipient_type}`);
         if (!userSocketId) {
-            console.log(`No socket found for recipient_id ${recipient_id}`);
+            console.log(`No socket found for recipient_id ${recipient_id} and recipient_type ${recipient_type}`);
             return;
         }
         try {
@@ -69,47 +70,43 @@ io.on("connection", (socket) => {
         }
     });
 
-    async function getNotifications(notificationId) {
-        const apiUrl = `https://kayzen.es/backend/api/notification/getNotificationDetails`;
-        try {
-            const response = await axios.post(apiUrl, { notification_id: notificationId });
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching notifications:', error);
-            throw error;
-        }
-    }
-    
-    async function markNotificationsAsSeen(notificationIds) {
-        const apiUrl = `https://kayzen.es/backend/api/notification/updateNotification`;
-        try {
-            const formData = new URLSearchParams();
-            formData.append('notification_id', notificationIds.join(','));
-            const response = await axios.post(apiUrl, formData, {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            });
-
-            return response.data;
-        } catch (error) {
-            console.error('Error marking notifications as seen:', error);
-            throw error;
-        }
-    }
-
     socket.on('disconnect', () => {
-        if (userId) {
-            global.onlineUsers.delete(userId);
+        if (userId && userType) {
+            global.onlineUsers.delete(`${userId}-${userType}`);
             console.log(global.onlineUsers, 'onlineUsers');
         }
     });
 });
 
+async function getNotifications(notificationId) {
+    const apiUrl = `https://kayzen.es/backend/api/notification/getNotificationDetails`;
+    try {
+        const response = await axios.post(apiUrl, { notification_id: notificationId });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching notifications:', error);
+        throw error;
+    }
+}
+
+async function markNotificationsAsSeen(notificationIds) {
+    const apiUrl = `https://kayzen.es/backend/api/notification/updateNotification`;
+    try {
+        const formData = new URLSearchParams();
+        formData.append('notification_id', notificationIds.join(','));
+        const response = await axios.post(apiUrl, formData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error('Error marking notifications as seen:', error);
+        throw error;
+    }
+}
+
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-
-
-
-
