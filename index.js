@@ -39,15 +39,18 @@ io.on("connection", (socket) => {
         global.onlineUsers.set(`${userId}-${userType}`, socket.id);
     }
 
+
     socket.on('send_notification', async (data) => {
         const { recipient_id, recipient_type, notificationId } = data;
         const userSocketId = global.onlineUsers.get(`${recipient_id}-${recipient_type}`);
+        console.log(userSocketId, 'userSocketId')
         if (!userSocketId) {
             console.log(`No socket found for recipient_id ${recipient_id} and recipient_type ${recipient_type}`);
             return;
         }
         try {
             const notifications = await getNotifications(notificationId);
+            console.log(notifications, 'notifications');
             io.to(userSocketId).emit('get_notification', { data: notifications });
         } catch (error) {
             console.error('Error sending notifications:', error);
@@ -63,7 +66,7 @@ io.on("connection", (socket) => {
         }
         try {
             await markNotificationsAsSeen(notificationIds);
-            const notifications = await getNotifications(notificationIds[0]); // assuming notificationId can be used to fetch the updated list
+            const notifications = await getNotifications(notificationIds[0]);
             io.to(userSocketId).emit('get_notification', { data: notifications });
         } catch (error) {
             console.error('Error updating and sending notifications:', error);
