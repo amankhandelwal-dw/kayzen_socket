@@ -77,7 +77,7 @@ io.on("connection", (socket) => {
     socket.on('disconnect', () => {
         if (userId && userType) {
             global.onlineUsers.delete(`${userId}-${userType}`);
-            console.log(global.onlineUsers, 'onlineUsers');
+            console.log('A user disconnected with socket ID:', socket.id)
         }
     });
 });
