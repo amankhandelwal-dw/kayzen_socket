@@ -78,16 +78,17 @@ io.on("connection", (socket) => {
 });
 
 async function getNotifications(notificationId) {
-    const apiUrl = `https://kayzen.es/backend/api/notification/getNotificationDetails`;
+    const apiUrl = `https://kayzen.es/backend/api/notification/getNotificationDetails?notification_id=${notificationId}`;
     try {
-        const response = await axios.post(apiUrl, { notification_id: notificationId });
-         console.log(response, 'response')
+        const response = await axios.get(apiUrl);
+        console.log(response, 'response');
         return response.data;
-    } catch (error){
+    } catch (error) {
         console.error('Error fetching notifications:', error);
         throw error;
     }
 }
+
 
 async function markNotificationsAsSeen(notificationIds) {
     const apiUrl = `https://kayzen.es/backend/api/notification/updateNotification`;
