@@ -24,14 +24,12 @@ app.get('/', (req, res) => {
     return res.send("WebSocket Server is running");
 });
 
-
 global.onlineUsers = new Map();
 
 io.on("connection", (socket) => {
     console.log('A user connected with socket ID:', socket.id);
     console.log('User ID from auth:', socket.handshake.auth.userId);
     console.log('User Type from auth:', socket.handshake.auth.userType);
-
     const userId = socket.handshake.auth.userId;
     const userType = socket.handshake.auth.userType;
 
@@ -39,19 +37,16 @@ io.on("connection", (socket) => {
         global.onlineUsers.set(`${userId}-${userType}`, socket.id);
     }
 
-
     socket.on('send_notification', async (data) => {
-        console.log(data, 'data');
         const { recipient_id, recipient_type, notificationId } = data;
         const userSocketId = global.onlineUsers.get(`${recipient_id}-${recipient_type}`);
-        console.log(userSocketId, 'userSocketId')
+        // console.log(userSocketId, 'userSocketId')
         if (!userSocketId) {
             console.log(`No socket found for recipient_id ${recipient_id} and recipient_type ${recipient_type}`);
             return;
         }
         try {
             const notifications = await getNotifications(notificationId);
-            console.log(notifications, 'notifications');
             io.to(userSocketId).emit('get_notification', { data: notifications });
         } catch (error) {
             console.error('Error sending notifications:', error);
@@ -86,8 +81,9 @@ async function getNotifications(notificationId) {
     const apiUrl = `https://kayzen.es/backend/api/notification/getNotificationDetails`;
     try {
         const response = await axios.post(apiUrl, { notification_id: notificationId });
+         console.log(response, 'response')
         return response.data;
-    } catch (error) {
+    } catch (error){
         console.error('Error fetching notifications:', error);
         throw error;
     }
@@ -103,7 +99,6 @@ async function markNotificationsAsSeen(notificationIds) {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         });
-
         return response.data;
     } catch (error) {
         console.error('Error marking notifications as seen:', error);
