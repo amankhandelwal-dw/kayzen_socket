@@ -23,7 +23,7 @@
 
     <script>
         // User ID to be sent to the server
-        const socket = io('13.51.82.85', {
+        const socket = io('http://13.51.82.85', {
             auth: { userId: '1', userType: 'admin' }
         });
 
@@ -54,7 +54,7 @@
         // Log connection status
         socket.on('connect', () => {
             console.log('Connected to WebSocket server');
-            socket.emit('send_notification', {  recipient_id: '1', recipient_type: 'admin', notificationId: 1 });
+            socket.emit('send_notification', {  recipient_id: '1', recipient_type: 'admin', notificationId: 10 });
         });
 
         socket.on('disconnect', () => {

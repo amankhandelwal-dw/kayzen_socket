@@ -3,6 +3,8 @@ const express = require('express');
 const { Server: SocketIO } = require('socket.io');
 const axios = require('axios');
 
+
+
 const app = express();
 
 const server = http.createServer(app);
@@ -78,16 +80,18 @@ io.on("connection", (socket) => {
 
 async function getNotifications(notificationId) {
     const apiUrl = `https://kayzen.es/backend/api/notification/getNotificationDetails?notification_id=${notificationId}`;
-    console.log(apiUrl, 'apiUrl')
+    console.log(apiUrl, 'apiUrl');
     try {
-        const response = await axios.get(apiUrl);
-        console.log(response.data.data, 'response');
-        return response.data;
+        const response = await fetch(apiUrl);
+        const responseJson = await response.json();
+        console.log(responseJson, 'response');
+        return responseJson.data;
     } catch (error) {
         console.error('Error fetching notifications:', error);
         throw error;
     }
 }
+
 
 
 async function markNotificationsAsSeen(notificationIds) {
