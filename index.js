@@ -78,19 +78,26 @@ io.on("connection", (socket) => {
     });
 });
 
-async function getNotifications(notificationId) {
+async function getNotifications(notificationId, retries = 3) {
     const apiUrl = `https://kayzen.es/backend/api/notification/getNotificationDetails?notification_id=${notificationId}`;
     console.log(apiUrl, 'apiUrl');
-    try {
-        const response = await fetch(apiUrl);
-        const responseJson = await response.json();
-        console.log(responseJson, 'response');
-        return responseJson.data;
-    } catch (error) {
-        console.error('Error fetching notifications:', error);
-        throw error;
+    while (retries > 0) {
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const responseJson = await response.json();
+            console.log(responseJson, 'response');
+            return responseJson.data;
+        } catch (error) {
+            retries -= 1;
+            console.error(`Error fetching notifications (retries left: ${retries}):`, error);
+            if (retries === 0) throw error; // Rethrow error if no retries left
+        }
     }
 }
+
 
 
 
