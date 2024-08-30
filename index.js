@@ -1,12 +1,8 @@
 const http = require('http');
 const express = require('express');
 const { Server: SocketIO } = require('socket.io');
-const axios = require('axios');
-
-
 
 const app = express();
-
 const server = http.createServer(app);
 
 const io = new SocketIO(server, {
@@ -73,45 +69,38 @@ io.on("connection", (socket) => {
     socket.on('disconnect', () => {
         if (userId && userType) {
             global.onlineUsers.delete(`${userId}-${userType}`);
-            console.log('A user disconnected with socket ID:', socket.id)
+            console.log('A user disconnected with socket ID:', socket.id);
         }
     });
 });
 
-async function getNotifications(notificationId, retries = 3) {
+async function getNotifications(notificationId) {
     const apiUrl = `https://kayzen.es/backend/api/notification/getNotificationDetails?notification_id=${notificationId}`;
     console.log(apiUrl, 'apiUrl');
-    while (retries > 0) {
-        try {
-            const response = await fetch(apiUrl);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const responseJson = await response.json();
-            console.log(responseJson, 'response');
-            return responseJson.data;
-        } catch (error) {
-            retries -= 1;
-            console.error(`Error fetching notifications (retries left: ${retries}):`, error);
-            if (retries === 0) throw error; // Rethrow error if no retries left
-        }
+    try {
+        const response = await fetch(apiUrl);
+        const responseJson = await response.json();
+        console.log(responseJson, 'response');
+        return responseJson.data;
+    } catch (error) {
+        console.error('Error fetching notifications:', error);
+        throw error;
     }
 }
-
-
-
 
 async function markNotificationsAsSeen(notificationIds) {
     const apiUrl = `https://kayzen.es/backend/api/notification/updateNotification`;
     try {
         const formData = new URLSearchParams();
         formData.append('notification_id', notificationIds.join(','));
-        const response = await axios.post(apiUrl, formData, {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
-            }
+            },
+            body: formData
         });
-        return response.data;
+        return await response.json();
     } catch (error) {
         console.error('Error marking notifications as seen:', error);
         throw error;
