@@ -30,20 +30,22 @@ io.on("connection", (socket) => {
     console.log('User Type from auth:', socket.handshake.auth.userType);
     const userId = socket.handshake.auth.userId;
     const userType = socket.handshake.auth.userType;
-
     if (userId && userType) {
         global.onlineUsers.set(`${userId}-${userType}`, socket.id);
     }
 
     socket.on('send_notification', async (data) => {
         const { recipient_id, recipient_type, notificationId } = data;
+        console.log(data, 'data');
         const userSocketId = global.onlineUsers.get(`${recipient_id}-${recipient_type}`);
         if (!userSocketId) {
             console.log(`No socket found for recipient_id ${recipient_id} and recipient_type ${recipient_type}`);
             return;
         }
+        console.log(userSocketId, 'userSocketId');
         try {
             const notifications = await getNotifications(notificationId);
+            console.log(notifications, 'LLLL')
             io.to(userSocketId).emit('get_notification', { data: notifications });
         } catch (error) {
             console.error('Error sending notifications:', error);
