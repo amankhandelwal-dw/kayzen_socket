@@ -96,16 +96,11 @@ async function markNotificationsAsSeen(notificationIds) {
     const apiUrl = `https://kayzen.es/backend/api/notification/updateNotification`;
 
     try {
-        const formData = new FormData();
-        notificationIds.forEach(id => {
-            formData.append('notification_id[]', id); 
-        });
-
         const response = await fetch(apiUrl, {
             method: 'POST',
-            body: formData,
+            body: JSON.stringify({ notification_id: notificationIds }),  // Send as JSON
             headers: {
-                // No need to manually set 'Content-Type' for FormData, fetch does it automatically
+                'Content-Type': 'application/json',  // Explicitly set content-type to JSON
             }
         });
 
@@ -119,7 +114,7 @@ async function markNotificationsAsSeen(notificationIds) {
 
         // If response is OK, attempt to parse as JSON
         if (response.ok) {
-            const jsonResponse = JSON.parse(responseText); // Manually parsing the JSON
+            const jsonResponse = JSON.parse(responseText);
             console.log('Response JSON:', jsonResponse);
             return jsonResponse;
         } else {
@@ -127,10 +122,11 @@ async function markNotificationsAsSeen(notificationIds) {
         }
 
     } catch (error) {
-        console.error('Error marking notifications as seen:', error);  // Improved error handling
+        console.error('Error marking notifications as seen:', error);
         throw error;
     }
 }
+
 
 
 
