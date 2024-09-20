@@ -91,10 +91,12 @@ async function getNotifications(notificationId) {
 }
 
 async function markNotificationsAsSeen(notificationIds) {
+    console.log(notificationIds, 'notificationIds')
     const apiUrl = `https://kayzen.es/backend/api/notification/updateNotification`;
     try {
         const formData = new FormData();
         formData.append('notification_id', notificationIds.join(','));  // Send as comma-separated string
+        console.log(formData, 'form-Data')
 
         const response = await fetch(apiUrl, {
             method: 'POST',
@@ -104,7 +106,7 @@ async function markNotificationsAsSeen(notificationIds) {
             }
         });
 
-        console.log('Response status:', response);  // Log the status code
+        // console.log('Response status:', response);  // Log the status code
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
