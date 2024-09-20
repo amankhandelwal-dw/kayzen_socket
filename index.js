@@ -95,8 +95,9 @@ async function markNotificationsAsSeen(notificationIds) {
     const apiUrl = `https://kayzen.es/backend/api/notification/updateNotification`;
     try {
         const formData = new FormData();
-        formData.append('notification_id', notificationIds.join(','));  // Send as comma-separated string
-        console.log(formData, 'form-Data')
+        notificationIds.forEach(id => {
+            formData.append('notification_id[]', id); 
+        });
 
         const response = await fetch(apiUrl, {
             method: 'POST',
