@@ -42,8 +42,8 @@ io.on("connection", (socket) => {
             console.log(`No socket found for recipient_id ${recipient_id} and recipient_type ${recipient_type}`);
             return;
         }
-        console.log(userSocketId, 'userSocketId');
         try {
+            console.log("lndjradlorknadkoek")
             const notifications = await getNotifications(notificationId);
             console.log(notifications, 'LLLL')
             io.to(userSocketId).emit('get_notification', { data: notifications });
@@ -94,7 +94,9 @@ async function markNotificationsAsSeen(notificationIds) {
     const apiUrl = `https://kayzen.es/backend/api/notification/updateNotification`;
     try {
         const formData = new URLSearchParams();
-        formData.append('notification_id', notificationIds.join(','));
+        formData.append('notification_id', notificationIds.join(','));  // Comma-separated list
+        console.log('Sending data:', formData.toString());
+
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
@@ -102,12 +104,22 @@ async function markNotificationsAsSeen(notificationIds) {
             },
             body: formData
         });
-        return await response.json();
+
+        console.log('Response status:', response.status);  // Log the status code
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const jsonResponse = await response.json();
+        console.log('Response JSON:', jsonResponse);  // Log the JSON response
+        return jsonResponse;
     } catch (error) {
-        console.error('Error marking notifications as seen:', error);
+        console.error('Error marking notifications as seen:', error);  // Improved error handling
         throw error;
     }
 }
+
 
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
