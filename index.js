@@ -93,16 +93,15 @@ async function getNotifications(notificationId) {
 async function markNotificationsAsSeen(notificationIds) {
     const apiUrl = `https://kayzen.es/backend/api/notification/updateNotification`;
     try {
-        const formData = new URLSearchParams();
-        formData.append('notification_id', notificationIds.join(','));  // Comma-separated list
-        console.log('Sending data:', formData.toString());
+        const formData = new FormData();
+        formData.append('notification_id', notificationIds.join(','));  // Send as comma-separated string
 
         const response = await fetch(apiUrl, {
             method: 'POST',
+            body: formData,
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: formData
+                // No need to manually set 'Content-Type' for FormData, fetch does it automatically
+            }
         });
 
         console.log('Response status:', response.status);  // Log the status code
@@ -119,6 +118,7 @@ async function markNotificationsAsSeen(notificationIds) {
         throw error;
     }
 }
+
 
 
 server.listen(PORT, () => {
