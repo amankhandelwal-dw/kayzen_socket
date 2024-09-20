@@ -89,6 +89,8 @@ async function getNotifications(notificationId) {
         throw error;
     }
 }
+
+
 async function markNotificationsAsSeen(notificationIds) {
     console.log(notificationIds, 'notificationIds');
     const apiUrl = `https://kayzen.es/backend/api/notification/updateNotification`;
@@ -129,6 +131,7 @@ async function markNotificationsAsSeen(notificationIds) {
         throw error;
     }
 }
+
 
 
 
