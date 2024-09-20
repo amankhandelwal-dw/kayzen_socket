@@ -89,10 +89,10 @@ async function getNotifications(notificationId) {
         throw error;
     }
 }
-
 async function markNotificationsAsSeen(notificationIds) {
-    console.log(notificationIds, 'notificationIds')
+    console.log(notificationIds, 'notificationIds');
     const apiUrl = `https://kayzen.es/backend/api/notification/updateNotification`;
+
     try {
         const formData = new FormData();
         notificationIds.forEach(id => {
@@ -107,20 +107,29 @@ async function markNotificationsAsSeen(notificationIds) {
             }
         });
 
-        // console.log('Response status:', response);  // Log the status code
+        // Log the response status and headers
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
 
-        if (!response.ok) {
+        // Try to get the response text to see what is being returned
+        const responseText = await response.text();
+        console.log('Response body:', responseText);
+
+        // If response is OK, attempt to parse as JSON
+        if (response.ok) {
+            const jsonResponse = JSON.parse(responseText); // Manually parsing the JSON
+            console.log('Response JSON:', jsonResponse);
+            return jsonResponse;
+        } else {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const jsonResponse = await response.json();
-        console.log('Response JSON:', jsonResponse);  // Log the JSON response
-        return jsonResponse;
     } catch (error) {
         console.error('Error marking notifications as seen:', error);  // Improved error handling
         throw error;
     }
 }
+
 
 
 
